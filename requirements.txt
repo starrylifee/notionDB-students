@@ -1,0 +1,4 @@
+streamlit
+openai
+requests
+smtplib  # 버전 번호 지정 불필요, Python 표준 라이브러리의 일부
