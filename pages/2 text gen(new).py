@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Streamlit의 배경색 변경
-background_color = "#E0FFFF"
+background_color = "#FFFACD"
 
 # 배경색 변경을 위한 CSS
 page_bg_css = f"""
