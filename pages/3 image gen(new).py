@@ -53,6 +53,7 @@ hide_menu_style = """
 # Streamlit에서 HTML 및 CSS 적용
 st.markdown(hide_menu_style, unsafe_allow_html=True)
 st.markdown(page_bg_css, unsafe_allow_html=True)
+
 # secrets.toml 파일 경로
 secrets_path = pathlib.Path(__file__).parent.parent / ".streamlit/secrets.toml"
 
@@ -158,59 +159,54 @@ if "prompt" in st.session_state and st.session_state.prompt:
     st.write("**프롬프트:** " + st.session_state.prompt)
 
     # 사전 정의된 형용사 옵션 제공
-    with st.expander("형용사 선택"):
+    st.subheader("형용사 선택 (최대 2개)")
 
-        col1, col2 = st.columns(2)
+    # 각 형용사 그룹에 대해 체크박스 제공
+    color_options = ["밝은", "어두운", "선명한", "부드러운", "따뜻한", 
+                     "차가운", "다채로운", "흑백의", "파스텔톤의", "무채색의"]
+    mood_options = ["몽환적인", "현실적인", "우아한", "고요한", "활기찬", 
+                    "긴장감 있는", "로맨틱한", "공포스러운", "신비로운", "평화로운"]
+    style_options = ["미니멀한", "복잡한", "빈티지한", "모던한", "고전적인", 
+                     "미래적인", "자연주의적인", "기하학적인", "추상적인", "대담한"]
+    texture_options = ["매끄러운", "거친", "부드러운", "뾰족한", "질감이 느껴지는", 
+                       "광택 있는", "매트한", "무광의", "플러시한"]
+    emotion_options = ["즐거운", "슬픈", "분노한", "평온한", "감동적인", 
+                       "따뜻한", "외로운", "흥미로운", "짜릿한", "사려 깊은"]
 
-        with col1:
-            selected_color = st.radio("🎨 색감 선택", ["선택하지 않음"] + [
-                "밝은", "어두운", "선명한", "부드러운", "따뜻한", 
-                "차가운", "다채로운", "흑백의", "파스텔톤의", "무채색의"
-            ])
-            selected_mood = st.radio("🌅 분위기 선택", ["선택하지 않음"] + [
-                "몽환적인", "현실적인", "우아한", "고요한", "활기찬", 
-                "긴장감 있는", "로맨틱한", "공포스러운", "신비로운", "평화로운"
-            ])
+    selected_adjectives = []
+    selected_adjectives += [option for option in color_options if st.checkbox(option, key=f"color_{option}")]
+    selected_adjectives += [option for option in mood_options if st.checkbox(option, key=f"mood_{option}")]
+    selected_adjectives += [option for option in style_options if st.checkbox(option, key=f"style_{option}")]
+    selected_adjectives += [option for option in texture_options if st.checkbox(option, key=f"texture_{option}")]
+    selected_adjectives += [option for option in emotion_options if st.checkbox(option, key=f"emotion_{option}")]
 
-        with col2:
-            selected_style = st.radio("🖌️ 스타일 선택", ["선택하지 않음"] + [
-                "미니멀한", "복잡한", "빈티지한", "모던한", "고전적인", 
-                "미래적인", "자연주의적인", "기하학적인", "추상적인", "대담한"
-            ])
-            selected_texture = st.radio("🧶 텍스처 선택", ["선택하지 않음"] + [
-                "매끄러운", "거친", "부드러운", "뾰족한", "질감이 느껴지는", 
-                "광택 있는", "매트한", "무광의", "플러시한"
-            ])
-            selected_emotion = st.radio("😊 감정 표현 선택", ["선택하지 않음"] + [
-                "즐거운", "슬픈", "분노한", "평온한", "감동적인", 
-                "따뜻한", "외로운", "흥미로운", "짜릿한", "사려 깊은"
-            ])
+    if len(selected_adjectives) > 2:
+        st.error("⚠️ 형용사는 최대 2개까지 선택할 수 있습니다. 다시 선택해 주세요.")
+    else:
+        combined_concept = " ".join(selected_adjectives)
 
-    # 선택된 "선택하지 않음"을 제외한 형용사 결합
-    combined_concept = " ".join([option for option in [selected_color, selected_mood, selected_style, selected_texture, selected_emotion] if option != "선택하지 않음"])
+        if st.button("🖼️ 이미지 생성", key="generate_image"):
+            if combined_concept:
+                with st.spinner("🖼️ 이미지를 생성하는 중..."):
+                    combined_prompt = f"{st.session_state.prompt} {combined_concept}"
+                    response = client.images.generate(
+                        model="dall-e-3",
+                        prompt=combined_prompt,
+                        size="1024x1024",
+                        quality="standard",
+                        n=1,
+                    )
 
-    if st.button("🖼️ 이미지 생성", key="generate_image"):
-        if combined_concept:
-            with st.spinner("🖼️ 이미지를 생성하는 중..."):
-                combined_prompt = f"{st.session_state.prompt} {combined_concept}"
-                response = client.images.generate(
-                    model="dall-e-3",
-                    prompt=combined_prompt,
-                    size="1024x1024",
-                    quality="standard",
-                    n=1,
-                )
+                    image_url = response.data[0].url
+                    st.session_state.image_url = image_url
+                    st.image(image_url, caption="Generated Image", use_column_width=True)
+                    st.success("✅ 이미지가 성공적으로 생성되었습니다!")
+                    st.download_button(label="💾 이미지 다운로드", data=image_url, file_name="generated_image.png")
 
-                image_url = response.data[0].url
-                st.session_state.image_url = image_url
-                st.image(image_url, caption="Generated Image", use_column_width=True)
-                st.success("✅ 이미지가 성공적으로 생성되었습니다!")
-                st.download_button(label="💾 이미지 다운로드", data=image_url, file_name="generated_image.png")
-
-                # 이메일로 결과 전송
-                if send_email_to_teacher(student_name, st.session_state.teacher_email, st.session_state.prompt, combined_concept, image_url):
-                    st.success("📧 교사에게 이메일로 결과가 전송되었습니다.")
-        else:
-            st.error("⚠️ 최소한 하나의 형용사를 선택하세요.")
+                    # 이메일로 결과 전송
+                    if send_email_to_teacher(student_name, st.session_state.teacher_email, st.session_state.prompt, combined_concept, image_url):
+                        st.success("📧 교사에게 이메일로 결과가 전송되었습니다.")
+            else:
+                st.error("⚠️ 최소한 하나의 형용사를 선택하세요.")
 else:
     st.info("프롬프트를 업로드하세요.")
