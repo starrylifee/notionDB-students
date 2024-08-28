@@ -161,24 +161,38 @@ if "prompt" in st.session_state and st.session_state.prompt:
     # 사전 정의된 형용사 옵션 제공
     st.subheader("형용사 선택 (최대 2개)")
 
-    # 각 형용사 그룹에 대해 체크박스 제공
-    color_options = ["밝은", "어두운", "선명한", "부드러운", "따뜻한", 
-                     "차가운", "다채로운", "흑백의", "파스텔톤의", "무채색의"]
-    mood_options = ["몽환적인", "현실적인", "우아한", "고요한", "활기찬", 
-                    "긴장감 있는", "로맨틱한", "공포스러운", "신비로운", "평화로운"]
-    style_options = ["미니멀한", "복잡한", "빈티지한", "모던한", "고전적인", 
-                     "미래적인", "자연주의적인", "기하학적인", "추상적인", "대담한"]
-    texture_options = ["매끄러운", "거친", "부드러운", "뾰족한", "질감이 느껴지는", 
-                       "광택 있는", "매트한", "무광의", "플러시한"]
-    emotion_options = ["즐거운", "슬픈", "분노한", "평온한", "감동적인", 
-                       "따뜻한", "외로운", "흥미로운", "짜릿한", "사려 깊은"]
+    selected_color = st.multiselect(
+        "🎨 색감 선택",
+        options=["밝은", "어두운", "선명한", "부드러운", "따뜻한", 
+                 "차가운", "다채로운", "흑백의", "파스텔톤의", "무채색의"]
+    )
 
-    selected_adjectives = []
-    selected_adjectives += [option for option in color_options if st.checkbox(option, key=f"color_{option}")]
-    selected_adjectives += [option for option in mood_options if st.checkbox(option, key=f"mood_{option}")]
-    selected_adjectives += [option for option in style_options if st.checkbox(option, key=f"style_{option}")]
-    selected_adjectives += [option for option in texture_options if st.checkbox(option, key=f"texture_{option}")]
-    selected_adjectives += [option for option in emotion_options if st.checkbox(option, key=f"emotion_{option}")]
+    selected_mood = st.multiselect(
+        "🌅 분위기 선택",
+        options=["몽환적인", "현실적인", "우아한", "고요한", "활기찬", 
+                 "긴장감 있는", "로맨틱한", "공포스러운", "신비로운", "평화로운"]
+    )
+
+    selected_style = st.multiselect(
+        "🖌️ 스타일 선택",
+        options=["미니멀한", "복잡한", "빈티지한", "모던한", "고전적인", 
+                 "미래적인", "자연주의적인", "기하학적인", "추상적인", "대담한"]
+    )
+
+    selected_texture = st.multiselect(
+        "🧶 텍스처 선택",
+        options=["매끄러운", "거친", "부드러운", "뾰족한", "질감이 느껴지는", 
+                 "광택 있는", "매트한", "무광의", "플러시한"]
+    )
+
+    selected_emotion = st.multiselect(
+        "😊 감정 표현 선택",
+        options=["즐거운", "슬픈", "분노한", "평온한", "감동적인", 
+                 "따뜻한", "외로운", "흥미로운", "짜릿한", "사려 깊은"]
+    )
+
+    # 선택된 "선택하지 않음"을 제외한 형용사 결합
+    selected_adjectives = selected_color + selected_mood + selected_style + selected_texture + selected_emotion
 
     if len(selected_adjectives) > 2:
         st.error("⚠️ 형용사는 최대 2개까지 선택할 수 있습니다. 다시 선택해 주세요.")
