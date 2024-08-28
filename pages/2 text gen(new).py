@@ -5,6 +5,12 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+# 페이지 설정 - 아이콘과 제목 설정
+st.set_page_config(
+    page_title="학생용 교육 도구 텍스트",  # 브라우저 탭에 표시될 제목
+    page_icon="🤖",  # 브라우저 탭에 표시될 아이콘 (이모지 또는 이미지 파일 경로)
+)
+
 # Streamlit의 배경색 변경
 background_color = "#FFFACD"
 

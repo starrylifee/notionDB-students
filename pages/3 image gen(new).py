@@ -9,7 +9,7 @@ from email.mime.multipart import MIMEMultipart
 
 # 페이지 설정 - 아이콘과 제목 설정
 st.set_page_config(
-    page_title="학생용 교육 도구 홈",
+    page_title="학생용 교육 도구 이미지",
     page_icon="🤖",
 )
 
