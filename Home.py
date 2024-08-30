@@ -17,7 +17,8 @@ hide_menu_style = """
 st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 # 홈 화면 제목
-st.title("📚 AI 교육 도구 홈")
+st.title("안전하게 경험하는 인공지능 첫걸음")
+st.info("대상학년: 초등학교 1~6학년")
 
 # 소개 문구
 st.markdown("""
